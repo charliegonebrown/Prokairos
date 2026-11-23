@@ -1,0 +1,26 @@
+/* Prokairos brand tokens */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Jost:wght@400;500&display=swap");
+
+:root {
+  --pk-cream:  #F1E3CC; /* backgrounds, text on maroon */
+  --pk-camel:  #B8916A; /* secondary surfaces, borders */
+  --pk-maroon: #4A1C14; /* primary brand colour */
+  --pk-ink:    #2A120D; /* text on cream */
+  --pk-sand:   #E2C9A6; /* tagline on maroon */
+
+  --pk-font-display: "Cormorant Garamond", Georgia, serif; /* italic 600 for the wordmark */
+  --pk-font-body: "Jost", "Helvetica Neue", Arial, sans-serif;
+
+  --pk-tagline-tracking: 0.3em;
+}
+
+/* Tagline style: centred under the wordmark */
+.pk-tagline {
+  margin: 0;
+  font-family: var(--pk-font-body);
+  font-weight: 500;
+  letter-spacing: var(--pk-tagline-tracking);
+  padding-left: var(--pk-tagline-tracking); /* balances trailing tracking so it centres */
+  text-align: center;
+  text-transform: uppercase;
+}

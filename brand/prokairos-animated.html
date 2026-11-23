@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prokairos: animated wordmark</title>
+<link rel="stylesheet" href="brand.css">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--pk-maroon); }
+
+  /* ---- Animated wordmark component (copy this block + the markup + the script) ---- */
+  .pk-anim { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; color: var(--pk-cream); }
+  .pk-anim svg { width: min(90vw, 846px); height: auto; overflow: visible; }
+  .pk-anim .pk-hand { transition: transform 300ms cubic-bezier(0.45, 0, 0.55, 1); transform: rotate(-35deg); }
+  .pk-anim .pk-letter { fill-opacity: 0; transition: fill-opacity 260ms ease; }
+  .pk-anim .pk-letter.is-on { fill-opacity: 1; }
+  .pk-anim .pk-tagline { color: var(--pk-sand); font-size: clamp(14px, 2.4vw, 26px); opacity: 0; transition: opacity 700ms ease; }
+  .pk-anim .pk-tagline.is-on { opacity: 1; }
+
+  /* Respect reduced-motion: show the finished logo, no animation */
+  @media (prefers-reduced-motion: reduce) {
+    .pk-anim .pk-hand, .pk-anim .pk-letter, .pk-anim .pk-tagline { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pk-anim" data-pk-anim>
+  <svg viewBox="20 80 564 135" role="img" aria-label="Prokairos">
+    <g transform="translate(42.5 0) skewX(-12)" fill="currentColor" fill-rule="evenodd">
+      <path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/>
+      <path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/>
+      <g transform="translate(62 135)">
+        <g class="pk-hand">
+          <polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/>
+          <path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z M46.5 0 C50 -3.5 54 -3.5 57.5 0 C54 3.5 50 3.5 46.5 0 Z"/>
+          <polygon points="61,-1.2 72,0 61,1.2"/>
+          <path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/>
+        </g>
+      </g>
+    </g>
+    <text x="104" y="200" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" font-size="150" fill="currentColor" textLength="470" lengthAdjust="spacing"><tspan class="pk-letter">r</tspan><tspan class="pk-letter">o</tspan><tspan class="pk-letter">k</tspan><tspan class="pk-letter">a</tspan><tspan class="pk-letter">i</tspan><tspan class="pk-letter">r</tspan><tspan class="pk-letter">o</tspan><tspan class="pk-letter">s</tspan></text>
+  </svg>
+  <p class="pk-tagline">Paid at the right time</p>
+</div>
+
+<script>
+/**
+ * Prokairos animated wordmark.
+ * The clock hand swings like a damped pendulum inside the P's curve;
+ * each swing reveals one letter; it comes to rest at the logo pose (-35deg)
+ * when "Prokairos" is complete, the tagline fades in, holds, then loops.
+ *
+ * Options (data attributes on the root): data-loop="false" to play once.
+ */
+(function () {
+  const REST = -35;          // logo pose, degrees
+  const TICK_MS = 300;       // one swing per tick
+  const HOLD_TICKS = 10;     // ~3 s hold on the finished logo
+  const START_AMP = 26;      // first swing amplitude, degrees
+  const DAMPING = 3;         // amplitude lost per swing
+
+  function init(root) {
+    const hand = root.querySelector('.pk-hand');
+    const letters = Array.from(root.querySelectorAll('.pk-letter'));
+    const tagline = root.querySelector('.pk-tagline');
+    const loop = root.dataset.loop !== 'false';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const setAngle = (deg) => { hand.style.transform = `rotate(${deg}deg)`; };
+    const showFinished = () => {
+      setAngle(REST);
+      letters.forEach((l) => l.classList.add('is-on'));
+      tagline.classList.add('is-on');
+    };
+
+    if (reduced) { showFinished(); return; }
+
+    let shown = 0, hold = 0, timer = null;
+
+    function step() {
+      if (shown < letters.length) {
+        shown += 1;
+        const amp = START_AMP - DAMPING * (shown - 1);
+        const side = shown % 2 === 1 ? -1 : 1;
+        setAngle(REST + side * amp);
+        letters[shown - 1].classList.add('is-on');
+      } else if (hold < HOLD_TICKS) {
+        if (hold === 0) { setAngle(REST); tagline.classList.add('is-on'); }
+        hold += 1;
+        if (!loop && hold === HOLD_TICKS) { clearInterval(timer); }
+      } else {
+        shown = 0; hold = 0;
+        letters.forEach((l) => l.classList.remove('is-on'));
+        tagline.classList.remove('is-on');
+      }
+    }
+
+    setAngle(REST);
+    timer = setInterval(step, TICK_MS);
+  }
+
+  document.querySelectorAll('[data-pk-anim]').forEach(init);
+})();
+</script>
+</body>
+</html>

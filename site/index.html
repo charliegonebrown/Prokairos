@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Prokairos</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:title" content="Prokairos: Paid at the right time">
+<meta property="og:description" content="Scheduled stablecoin payments on X Layer, gated by TapeOut circuits.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Jost:wght@400;500;600&display=swap">
+<style>
+:root {
+  --pk-cream:  #F1E3CC;
+  --pk-camel:  #B8916A;
+  --pk-maroon: #4A1C14;
+  --pk-ink:    #2A120D;
+  --pk-sand:   #E2C9A6;
+  --pk-font-display: "Cormorant Garamond", Georgia, serif;
+  --pk-font-body: "Jost", "Helvetica Neue", Arial, sans-serif;
+  --bg: #F7EDE0;
+  --surface: #fff;
+  --border: rgba(184,145,106,0.35);
+  --text: var(--pk-ink);
+  --muted: #7D6350;
+  --accent: var(--pk-maroon);
+  --accent-hover: #5E241A;
+  --success: #2E7D32;
+  --danger: #C62828;
+  --warning: #BF5700;
+  --radius: 16px;
+  --shadow: 0 1px 3px rgba(42,18,13,0.06), 0 4px 12px rgba(42,18,13,0.04);
+  --shadow-lg: 0 4px 16px rgba(42,18,13,0.1), 0 12px 40px rgba(42,18,13,0.06);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--pk-font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--pk-maroon);
+  color: var(--pk-cream);
+  padding: 0 16px;
+}
+.header-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+.logo-link {
+  display: flex; align-items: center;
+  text-decoration: none; color: inherit;
+}
+.logo-link svg { height: 32px; width: auto;
+}
+.header-right { display: flex; align-items: center; gap: 8px; }
+#connectBtn {
+  background: var(--pk-cream); color: var(--pk-maroon);
+  border: none; padding: 8px 16px; border-radius: 24px;
+  cursor: pointer; font-family: var(--pk-font-body);
+  font-size: 13px; font-weight: 600;
+  transition: transform 0.1s, opacity 0.15s;
+}
+#connectBtn:active { transform: scale(0.96); }
+.settings-btn {
+  background: none; border: none; color: var(--pk-cream);
+  cursor: pointer; padding: 8px; border-radius: 50%;
+  display: grid; place-items: center;
+  opacity: 0.7; transition: opacity 0.15s;
+}
+.settings-btn:hover, .settings-btn:active { opacity: 1; }
+#connectBtn.connected {
+  background: rgba(241,227,204,0.15); border: 1px solid rgba(241,227,204,0.25);
+  color: var(--pk-cream); gap: 6px; display: inline-flex; align-items: center;
+}
+#connectBtn.connected .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; flex-shrink: 0;
+}
+
+/* ===== BOTTOM NAV (mobile) / TOP TABS (desktop) ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -2px 12px rgba(42,18,13,0.06);
+}
+.nav-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 8px 4px 6px;
+  background: none; border: none;
+  color: var(--muted); cursor: pointer;
+  font-family: var(--pk-font-body); font-size: 11px; font-weight: 500;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item svg { width: 22px; height: 22px; }
+.nav-item.active { color: var(--pk-maroon); }
+.nav-item.active svg { stroke-width: 2.2; }
+
+/* ===== MAIN CONTENT ===== */
+.app-main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}
+.page { display: none; }
+.page.active { display: block; }
+
+/* Page headers */
+.page-title {
+  font-family: var(--pk-font-display);
+  font-style: italic; font-weight: 600;
+  font-size: 28px; color: var(--pk-maroon);
+  margin-bottom: 4px;
+}
+.page-subtitle {
+  font-size: 14px; color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card-section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.card-section:first-child { padding-top: 0; }
+.card-section:last-child { border-bottom: none; padding-bottom: 0; }
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+  display: block;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.form-input, .form-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-family: var(--pk-font-body);
+  font-size: 15px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--pk-maroon);
+  box-shadow: 0 0 0 3px rgba(74,28,20,0.1);
+}
+.form-input::placeholder { color: var(--pk-camel); }
+.form-hint {
+  font-size: 12px; color: var(--muted);
+  margin-top: 4px; font-style: italic;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Toggle (payment type) */
+.toggle-group {
+  display: flex;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 2px;
+}
+.toggle-btn {
+  flex: 1;
+  background: none; border: none;
+  color: var(--muted); cursor: pointer;
+  font-family: var(--pk-font-body);
+  font-size: 14px; font-weight: 500;
+  padding: 10px; border-radius: 10px;
+  transition: all 0.2s;
+}
+.toggle-btn.active {
+  background: var(--pk-maroon);
+  color: var(--pk-cream);
+  box-shadow: 0 1px 4px rgba(74,28,20,0.2);
+}
+
+/* Total preview */
+.total-card {
+  background: linear-gradient(135deg, var(--pk-maroon), #5E241A);
+  color: var(--pk-cream);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 20px;
+}
+.total-card .total-label {
+  font-size: 13px; color: var(--pk-sand);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.total-card .total-amount {
+  font-family: var(--pk-font-display);
+  font-style: italic; font-weight: 600;
+  font-size: 32px; line-height: 1.1;
+}
+.total-card .total-detail {
+  font-size: 13px; color: var(--pk-sand);
+  margin-top: 6px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 12px 24px; border: none;
+  border-radius: 12px; cursor: pointer;
+  font-family: var(--pk-font-body);
+  font-size: 15px; font-weight: 600;
+  transition: transform 0.1s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: var(--pk-maroon); color: var(--pk-cream);
+  width: 100%; margin-top: 16px;
+  padding: 14px 24px; font-size: 16px;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 10px; margin-top: 0; width: auto; }
+.btn-outline {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  padding: 8px 14px; font-size: 13px;
+  border-radius: 10px;
+}
+
+/* ===== STATUS CHIPS ===== */
+.status {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.status-ready { background: rgba(46,125,50,0.1); color: var(--success); }
+.status-waiting { background: rgba(191,87,0,0.1); color: var(--warning); }
+.status-done { background: rgba(107,79,58,0.08); color: var(--muted); }
+.status-cancelled { background: rgba(198,40,40,0.08); color: var(--danger); }
+
+/* ===== SCHEDULE CARDS ===== */
+.schedule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+.schedule-card:active { transform: scale(0.99); box-shadow: var(--shadow-lg); }
+.schedule-card-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.schedule-card-id {
+  font-size: 12px; color: var(--muted);
+  font-weight: 500;
+}
+.schedule-card-amount {
+  font-size: 20px; font-weight: 600;
+  color: var(--pk-maroon);
+  line-height: 1.2;
+}
+.schedule-card-receiver {
+  font-size: 13px; color: var(--muted);
+  margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.schedule-card-footer {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.schedule-card-meta {
+  display: flex; gap: 12px;
+  font-size: 12px; color: var(--muted);
+}
+.schedule-card-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* Due payment cards */
+.due-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.due-card-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.due-card-amount {
+  font-size: 18px; font-weight: 600;
+  color: var(--pk-maroon);
+}
+.due-card-info {
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 12px;
+}
+.tip-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600;
+  color: var(--success);
+  background: rgba(46,125,50,0.08);
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+}
+.empty-state-icon {
+  display: block; margin: 0 auto 12px;
+  width: 48px; height: 48px;
+  color: var(--pk-camel); opacity: 0.5;
+}
+.empty-state-text { font-size: 15px; }
+.empty-state-hint { font-size: 13px; color: var(--pk-camel); margin-top: 4px; }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed; bottom: 90px; left: 16px; right: 16px;
+  max-width: 400px; margin: 0 auto;
+  background: var(--pk-ink); color: var(--pk-cream);
+  padding: 14px 20px; border-radius: 14px;
+  font-size: 14px; text-align: center;
+  display: none; z-index: 300;
+  box-shadow: var(--shadow-lg);
+  animation: toast-in 0.3s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== MODAL (bottom sheet on mobile) ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(42,18,13,0.5);
+  display: none; z-index: 200;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.active { display: flex; align-items: flex-end; justify-content: center; }
+.modal {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 8px 20px 24px;
+  width: 100%; max-width: 500px;
+  max-height: 85vh; overflow-y: auto;
+  animation: sheet-up 0.3s ease;
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border); border-radius: 2px;
+  margin: 8px auto 16px;
+}
+.modal h2 {
+  font-family: var(--pk-font-display);
+  font-style: italic; font-weight: 600;
+  font-size: 22px; color: var(--pk-maroon);
+  margin-bottom: 16px;
+}
+.modal .detail-row {
+  display: flex; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.modal .detail-row:last-of-type { border-bottom: none; }
+.modal .detail-label { color: var(--muted); flex-shrink: 0; }
+.modal .detail-val {
+  text-align: right; word-break: break-all;
+  max-width: 60%; font-weight: 500;
+}
+.modal .close-btn {
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--border);
+  padding: 12px; border-radius: 12px;
+  cursor: pointer; font-family: var(--pk-font-body);
+  font-size: 15px; font-weight: 500;
+  margin-top: 16px; width: 100%;
+  transition: background 0.15s;
+}
+.modal .close-btn:active { background: var(--pk-sand); }
+
+/* ===== SPLASH ===== */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--pk-maroon);
+  display: grid; place-items: center;
+  z-index: 999;
+  transition: opacity 600ms ease;
+}
+#splash.fade-out { opacity: 0; pointer-events: none; }
+.pk-anim { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; color: var(--pk-cream); }
+.pk-anim svg { width: min(80vw, 420px); height: auto; overflow: visible; }
+.pk-anim .pk-hand { transition: transform 300ms cubic-bezier(0.45, 0, 0.55, 1); transform: rotate(-35deg); }
+.pk-anim .pk-letter { fill-opacity: 0; transition: fill-opacity 260ms ease; }
+.pk-anim .pk-letter.is-on { fill-opacity: 1; }
+.pk-anim .pk-tagline {
+  color: var(--pk-sand); font-size: clamp(12px, 2.4vw, 20px);
+  opacity: 0; transition: opacity 700ms ease;
+  font-family: var(--pk-font-body); font-weight: 500;
+  letter-spacing: 0.3em; padding-left: 0.3em;
+  text-transform: uppercase; text-align: center; margin: 0;
+}
+.pk-anim .pk-tagline.is-on { opacity: 1; }
+
+/* ===== CONFIG BAR ===== */
+#config-info { display: none; }
+
+/* ===== DESKTOP OVERRIDES ===== */
+@media (min-width: 640px) {
+  body { padding-bottom: 24px; }
+  .bottom-nav {
+    position: static;
+    max-width: 640px; margin: 0 auto;
+    border-top: none; border-bottom: 1px solid var(--border);
+    background: transparent; box-shadow: none;
+    padding-bottom: 0;
+  }
+  .nav-item {
+    flex-direction: row; gap: 6px;
+    padding: 12px 16px; font-size: 14px;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-item.active { border-bottom-color: var(--pk-maroon); }
+  .nav-item svg { display: none; }
+  .modal-overlay.active { align-items: center; }
+  .modal {
+    border-radius: 20px;
+    max-width: 480px; width: 90%;
+    animation: modal-pop 0.25s ease;
+  }
+  @keyframes modal-pop {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  #toast { bottom: 24px; }
+
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .form-row { grid-template-columns: 1fr; }
+  .header-inner { height: 48px; }
+  .logo-link svg { height: 24px; }
+  #connectBtn { font-size: 12px; padding: 6px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" data-pk-anim data-loop="false">
+  <div class="pk-anim">
+    <svg viewBox="20 80 564 135" role="img" aria-label="Prokairos">
+      <g transform="translate(42.5 0) skewX(-12)" fill="currentColor" fill-rule="evenodd">
+        <path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/>
+        <path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/>
+        <g transform="translate(62 135)">
+          <g class="pk-hand">
+            <polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/>
+            <path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z M46.5 0 C50 -3.5 54 -3.5 57.5 0 C54 3.5 50 3.5 46.5 0 Z"/>
+            <polygon points="61,-1.2 72,0 61,1.2"/>
+            <path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/>
+          </g>
+        </g>
+      </g>
+      <text x="104" y="200" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" font-size="150" fill="currentColor" textLength="470" lengthAdjust="spacing"><tspan class="pk-letter">r</tspan><tspan class="pk-letter">o</tspan><tspan class="pk-letter">k</tspan><tspan class="pk-letter">a</tspan><tspan class="pk-letter">i</tspan><tspan class="pk-letter">r</tspan><tspan class="pk-letter">o</tspan><tspan class="pk-letter">s</tspan></text>
+    </svg>
+    <p class="pk-tagline">Paid at the right time</p>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-inner">
+    <a href="#" class="logo-link" onclick="showPage('create');return false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="20 80 564 135" fill="currentColor" role="img" aria-label="Prokairos"><g transform="translate(42.5 0) skewX(-12)" fill-rule="evenodd"><path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/><path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/><g transform="translate(62 135) rotate(-35)"><polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/><path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z M46.5 0 C50 -3.5 54 -3.5 57.5 0 C54 3.5 50 3.5 46.5 0 Z"/><polygon points="61,-1.2 72,0 61,1.2"/><path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/></g></g><text x="104" y="200" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" font-size="150" fill="currentColor" textLength="470" lengthAdjust="spacing">rokairos</text></svg>
+    </a>
+    <div class="header-right">
+      <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+      <button class="settings-btn" onclick="reconfigure()" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hidden config info (kept for JS compatibility) -->
+<span id="config-info" style="display:none"></span>
+
+<!-- NAVIGATION -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('create',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Create
+  </button>
+  <button class="nav-item" onclick="showPage('schedules',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Schedules
+  </button>
+  <button class="nav-item" onclick="showPage('due',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    Due
+  </button>
+</nav>
+
+<main class="app-main">
+
+  <!-- CREATE PAGE -->
+  <div id="page-create" class="page active">
+    <h2 class="page-title">New Payment</h2>
+    <p class="page-subtitle">Schedule a one-time or recurring stablecoin transfer</p>
+
+    <div class="card">
+      <!-- Payment type -->
+      <div class="form-group">
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setType('onetime',this)">One-time</button>
+          <button class="toggle-btn" onclick="setType('recurring',this)">Recurring</button>
+        </div>
+      </div>
+
+      <!-- Receiver -->
+      <div class="form-group">
+        <label class="form-label">Receiver address</label>
+        <input id="f-receiver" class="form-input" placeholder="0x...">
+      </div>
+
+      <!-- Token -->
+      <div class="form-group">
+        <label class="form-label">Token</label>
+        <div style="display:flex;gap:8px">
+          <select id="f-token" class="form-select" style="flex:1">
+            <option value="">Select token</option>
+          </select>
+          <button type="button" class="btn btn-outline" onclick="addCustomToken()" style="white-space:nowrap;flex-shrink:0;margin-top:0">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Amount + Tip -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input id="f-amount" class="form-input" type="number" placeholder="10" step="any">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tip per run</label>
+          <input id="f-tip" class="form-input" type="number" placeholder="0.5" step="any" min="0.01">
+          <div class="form-hint">Min 0.01 — covers submitter gas</div>
+        </div>
+      </div>
+
+      <!-- Start + Deadline -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start</label>
+          <input id="f-start-dt" class="form-input" type="datetime-local">
+          <div id="f-start-est" class="form-hint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deadline</label>
+          <input id="f-deadline-dt" class="form-input" type="datetime-local">
+          <div id="f-deadline-est" class="form-hint"></div>
+        </div>
+      </div>
+
+      <!-- Recurring fields -->
+      <div id="recurring-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Repeat every</label>
+            <div style="display:flex;gap:6px">
+              <input id="f-interval-val" class="form-input" type="number" placeholder="2" value="2" min="1" step="1" style="flex:1">
+              <select id="f-interval-unit" class="form-select" style="flex:1">
+                <option value="60">minutes</option>
+                <option value="3600">hours</option>
+                <option value="86400">days</option>
+              </select>
+            </div>
+            <div id="f-interval-est" class="form-hint">Every ~2 min</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Number of payments</label>
+            <input id="f-count" class="form-input" type="number" placeholder="3" value="3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total preview -->
+    <div class="total-card">
+      <div class="total-label">Total locked</div>
+      <div class="total-amount"><span id="total-display">0.00</span> <span id="total-token">tokens</span></div>
+      <div class="total-detail"><span id="total-payments">1</span> payment(s) &times; <span id="total-per">0</span> per run</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="createSchedule()">Create Schedule</button>
+  </div>
+
+  <!-- MY SCHEDULES PAGE -->
+  <div id="page-schedules" class="page">
+    <h2 class="page-title">My Schedules</h2>
+    <p class="page-subtitle">Track and manage your scheduled payments</p>
+    <div id="my-schedules-list">
+      <div class="empty-state">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="empty-state-text">Connect wallet to view your schedules</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DUE PAYMENTS PAGE -->
+  <div id="page-due" class="page">
+    <h2 class="page-title">Due Payments</h2>
+    <p class="page-subtitle">Submit ready payments and earn tips</p>
+    <div id="due-list">
+      <div class="empty-state">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <div class="empty-state-text">Loading due payments...</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-handle"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+// --- Config (testnet defaults) ---
+var DEFAULTS = {
+  scheduler: '0xa679f1bA885c1e08D9C247992B32D80E847DC5aC',
+  processor: '0x981F01Cd1a393584Ab764A51e8F6aa274C6a84f0',
+  tokens: {
+    // Testnet (1952)
+    '1952': {
+      '0xe53e27f9301033265af1464fbace515b7fada796': { symbol: 'USDC', decimals: 6 },
+    },
+    // Mainnet (196)
+    '196': {
+      '0x74b7f16337b8972027f6196a17a631ac6de26d22': { symbol: 'USDC', decimals: 6 },
+      '0x779ded0c9e1022225f8e0630b35a9b54be713736': { symbol: 'USDT0', decimals: 6 },
+    },
+  },
+};
+var CFG = {
+  scheduler: '',
+  processor: '',
+  circuitId: '1',
+  tokens: {},
+  chainId: 0,
+  rpcUrl: '',
+  blockTime: 1,
+};
+
+function initConfig() {
+  try {
+    CFG.scheduler = localStorage.getItem('cp_scheduler') || DEFAULTS.scheduler;
+    CFG.chainId = parseInt(localStorage.getItem('cp_chainId') || '1952');
+    CFG.rpcUrl = localStorage.getItem('cp_rpc') || (CFG.chainId === 196 ? 'https://rpc.xlayer.tech' : 'https://testrpc.xlayer.tech');
+    CFG.processor = localStorage.getItem('cp_processor') || DEFAULTS.processor;
+    CFG.circuitId = localStorage.getItem('cp_circuitId') || '1';
+    var savedVer = localStorage.getItem('cp_tokens_ver');
+    if (savedVer === '2') {
+      var savedTokens = localStorage.getItem('cp_tokens');
+      if (savedTokens) CFG.tokens = JSON.parse(savedTokens);
+    } else {
+      try { localStorage.removeItem('cp_tokens'); } catch(e) {}
+    }
+  } catch(e) {}
+
+  if (Object.keys(CFG.tokens).length === 0) {
+    var chainTokens = DEFAULTS.tokens[String(CFG.chainId)] || {};
+    CFG.tokens = {};
+    for (var addr in chainTokens) {
+      CFG.tokens[addr.toLowerCase()] = chainTokens[addr];
+    }
+    if (Object.keys(CFG.tokens).length === 0) {
+      CFG.tokens[Object.keys(DEFAULTS.tokens['1952'])[0]] = { symbol: 'USDC', decimals: 6 };
+    }
+    try { localStorage.setItem('cp_tokens_ver', '2'); } catch(e) {}
+  }
+  updateConfigBar();
+  populateTokenSelect();
+}
+
+function promptConfig() {
+  CFG.scheduler = prompt('Enter CircuitScheduler contract address:') || '';
+  if (CFG.scheduler) {
+    try { localStorage.setItem('cp_scheduler', CFG.scheduler); } catch(e) {}
+  }
+  if (Object.keys(CFG.tokens).length === 0) {
+    var addr = prompt('Enter test token (e.g. MockUSDC) address:') || '';
+    if (addr) {
+      CFG.tokens = {};
+      CFG.tokens[addr] = { symbol: 'USDC', decimals: 6 };
+      try { localStorage.setItem('cp_tokens', JSON.stringify(CFG.tokens)); localStorage.setItem('cp_tokens_ver', '2'); } catch(e) {}
+    }
+  }
+  var proc = prompt('Enter MockProcessor address (or leave blank):');
+  if (proc) {
+    CFG.processor = proc;
+    try { localStorage.setItem('cp_processor', proc); } catch(e) {}
+  }
+}
+
+function reconfigure() {
+  try {
+    localStorage.removeItem('cp_scheduler');
+    localStorage.removeItem('cp_tokens');
+    localStorage.removeItem('cp_processor');
+  } catch(e) {}
+  CFG.tokens = {};
+  promptConfig();
+  updateConfigBar();
+  populateTokenSelect();
+}
+
+function updateConfigBar() {
+  var el = document.getElementById('config-info');
+  if (CFG.scheduler) {
+    el.textContent = 'Contract: ' + CFG.scheduler.slice(0,6) + '...' + CFG.scheduler.slice(-4) + ' | Chain: ' + CFG.chainId;
+  } else {
+    el.textContent = 'Not configured — click Settings';
+  }
+}
+
+function populateTokenSelect() {
+  var sel = document.getElementById('f-token');
+  sel.innerHTML = '<option value="">Select token</option>';
+  for (var addr in CFG.tokens) {
+    var info = CFG.tokens[addr];
+    var opt = document.createElement('option');
+    opt.value = addr;
+    opt.textContent = info.symbol + ' (' + addr.slice(0,6) + '...' + addr.slice(-4) + ')';
+    sel.appendChild(opt);
+  }
+}
+
+// ERC-20 read selectors
+var ERC20_SEL = {
+  symbol:   '0x95d89b41',  // symbol()
+  decimals: '0x313ce567',  // decimals()
+  name:     '0x06fdde03',  // name()
+};
+
+async function addCustomToken() {
+  var addr = prompt('Paste the ERC-20 token contract address:');
+  if (!addr || !addr.startsWith('0x') || addr.length !== 42) {
+    if (addr) toast('Invalid address');
+    return;
+  }
+  addr = addr.toLowerCase();
+
+  if (CFG.tokens[addr]) {
+    toast(CFG.tokens[addr].symbol + ' is already added');
+    return;
+  }
+
+  toast('Looking up token...');
+  try {
+    var symbolHex = await ethCall(addr, ERC20_SEL.symbol);
+    var decimalsHex = await ethCall(addr, ERC20_SEL.decimals);
+
+    var symbol = decodeString(symbolHex);
+    var decimals = Number(ABI.decodeUint(decimalsHex.replace('0x',''), 0));
+
+    if (!symbol || decimals > 30) {
+      toast('Could not read token info — is this an ERC-20?');
+      return;
+    }
+
+    CFG.tokens[addr] = { symbol: symbol, decimals: decimals };
+    try { localStorage.setItem('cp_tokens', JSON.stringify(CFG.tokens)); localStorage.setItem('cp_tokens_ver', '2'); } catch(e) {}
+    populateTokenSelect();
+
+    // Auto-select the newly added token
+    document.getElementById('f-token').value = addr;
+    updateTotal();
+    toast(symbol + ' (' + decimals + ' decimals) added!');
+  } catch(e) {
+    toast('Error reading token: ' + e.message);
+  }
+}
+
+function decodeString(hex) {
+  var raw = hex.replace('0x','');
+  if (raw.length < 128) return '';
+  try {
+    var offset = Number(ABI.decodeUint(raw, 0)) * 2;
+    var len = Number(ABI.decodeUint(raw, offset));
+    if (len === 0 || len > 32) return '';
+    var bytes = raw.slice(offset + 64, offset + 64 + len * 2);
+    var str = '';
+    for (var i = 0; i < bytes.length; i += 2) {
+      var code = parseInt(bytes.slice(i, i+2), 16);
+      if (code > 0) str += String.fromCharCode(code);
+    }
+    return str;
+  } catch(e) {
+    return '';
+  }
+}
+
+// --- Minimal ABI encoder/decoder ---
+var ABI = {
+  encodeUint: function(v) { return BigInt(v).toString(16).padStart(64, '0'); },
+  encodeAddr: function(v) { return v.replace('0x','').toLowerCase().padStart(64, '0'); },
+  encodeBytes: function(hex) {
+    var data = hex.replace('0x','');
+    var len = data.length / 2;
+    var padLen = (32 - (len % 32)) % 32;
+    var padded = data + '0'.repeat(padLen * 2);
+    return ABI.encodeUint(len) + padded;
+  },
+  decodeUint: function(data, offset) {
+    var slice = data.slice(offset, offset + 64);
+    if (!slice || slice.length === 0) return 0n;
+    return BigInt('0x' + slice);
+  },
+  decodeAddr: function(data, offset) { return '0x' + data.slice(offset + 24, offset + 64); },
+  decodeBool: function(data, offset) { return ABI.decodeUint(data, offset) !== 0n; },
+};
+
+// Function selectors
+var SEL = {
+  scheduleCount: '0xb7ef81e1',
+  schedulesOf:   '0xc39875b1',
+  getSchedule:   '0xc5ca93a7',
+  isReady:       '0x50df8f71',
+  execute:       '0xfe0d94c1',
+  cancel:        '0x40e58ee5',
+  reclaim:       '0x2dabbeed',
+  approve:       '0x095ea7b3',
+  createSchedule:'0xd389158c',
+};
+
+// --- RPC helpers ---
+var account = null;
+var currentBlock = 0n;
+
+async function rpcCall(method, params) {
+  var resp = await fetch(CFG.rpcUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method: method, params: params }),
+  });
+  var json = await resp.json();
+  if (json.error) throw new Error(json.error.message);
+  return json.result;
+}
+
+async function ethCall(to, data) {
+  return rpcCall('eth_call', [{ to: to, data: data }, 'latest']);
+}
+
+async function sendTx(to, data) {
+  if (!window.ethereum) throw new Error('No wallet');
+  return window.ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [{ from: account, to: to, data: data }],
+  });
+}
+
+async function waitForTx(hash) {
+  for (var i = 0; i < 60; i++) {
+    var receipt = await rpcCall('eth_getTransactionReceipt', [hash]);
+    if (receipt) {
+      if (receipt.status === '0x0') throw new Error('Transaction reverted');
+      return receipt;
+    }
+    await new Promise(function(r) { setTimeout(r, 1500); });
+  }
+  throw new Error('Transaction not mined after 90s');
+}
+
+async function getBlock() {
+  var hex = await rpcCall('eth_blockNumber', []);
+  return BigInt(hex);
+}
+
+// --- Wallet ---
+async function connectWallet() {
+  if (!window.ethereum) {
+    toast('Please install MetaMask or another wallet');
+    return;
+  }
+  try {
+    var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    account = accounts[0];
+    var btn = document.getElementById('connectBtn');
+    btn.innerHTML = '<span class="dot"></span>' + account.slice(0,6) + '...' + account.slice(-4);
+    btn.classList.add('connected');
+
+    currentBlock = await getBlock();
+    setDefaultDatetimes();
+
+    loadMySchedules();
+    loadDuePayments();
+  } catch(e) {
+    toast('Connection failed: ' + e.message);
+  }
+}
+
+// --- Pages ---
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+
+  if (name === 'schedules' && account) loadMySchedules();
+  if (name === 'due') loadDuePayments();
+}
+
+var payType = 'onetime';
+function setType(type, btn) {
+  payType = type;
+  btn.parentElement.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('recurring-fields').style.display = type === 'recurring' ? '' : 'none';
+  updateTotal();
+}
+
+// --- Total preview ---
+function updateTotal() {
+  var amount = parseFloat(document.getElementById('f-amount').value) || 0;
+  var tip = parseFloat(document.getElementById('f-tip').value) || 0;
+  var count = payType === 'recurring' ? (parseInt(document.getElementById('f-count').value) || 1) : 1;
+  var total = count * (amount + tip);
+
+  var tokenAddr = document.getElementById('f-token').value;
+  var symbol = tokenAddr && CFG.tokens[tokenAddr.toLowerCase()] ? CFG.tokens[tokenAddr.toLowerCase()].symbol : 'tokens';
+
+  document.getElementById('total-display').textContent = total.toFixed(2);
+  document.getElementById('total-token').textContent = symbol;
+  document.getElementById('total-payments').textContent = String(count);
+  document.getElementById('total-per').textContent = (amount + tip).toFixed(2) + ' ' + symbol;
+}
+
+document.getElementById('f-amount').addEventListener('input', updateTotal);
+document.getElementById('f-tip').addEventListener('input', updateTotal);
+document.getElementById('f-count').addEventListener('input', updateTotal);
+document.getElementById('f-token').addEventListener('change', updateTotal);
+
+// Time <-> block helpers (~1 block per second on X Layer)
+function dateToBlock(dateStr) {
+  var target = new Date(dateStr).getTime();
+  var now = Date.now();
+  var diffSec = Math.round((target - now) / 1000);
+  if (diffSec < 10) diffSec = 10;
+  return currentBlock + BigInt(diffSec);
+}
+
+function blockToDate(blockNum) {
+  var diff = Number(blockNum - currentBlock);
+  var targetMs = Date.now() + diff * 1000;
+  return new Date(targetMs);
+}
+
+function blocksToTimeStr(blocks) {
+  var secs = Number(blocks);
+  if (secs < 0) return 'now';
+  if (secs < 60) return '~' + secs + 's';
+  if (secs < 3600) return '~' + Math.round(secs / 60) + ' min';
+  if (secs < 86400) return '~' + (secs / 3600).toFixed(1) + ' hours';
+  return '~' + (secs / 86400).toFixed(1) + ' days';
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function setDefaultDatetimes() {
+  var now = new Date();
+  var start = new Date(now.getTime() + 2 * 60000);
+  var deadline = new Date(now.getTime() + 3 * 3600000);
+  document.getElementById('f-start-dt').value = toLocalIso(start);
+  document.getElementById('f-deadline-dt').value = toLocalIso(deadline);
+  updateDateEstimates();
+}
+
+function toLocalIso(d) {
+  var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+function updateDateEstimates() {
+  var startVal = document.getElementById('f-start-dt').value;
+  var deadVal = document.getElementById('f-deadline-dt').value;
+  if (startVal) {
+    var startDiff = Math.round((new Date(startVal).getTime() - Date.now()) / 1000);
+    document.getElementById('f-start-est').textContent = startDiff > 0 ? 'Starts in ' + blocksToTimeStr(BigInt(startDiff)) + ' (estimate)' : 'Starts immediately';
+  }
+  if (deadVal) {
+    var deadDiff = Math.round((new Date(deadVal).getTime() - Date.now()) / 1000);
+    document.getElementById('f-deadline-est').textContent = deadDiff > 0 ? 'Expires in ' + blocksToTimeStr(BigInt(deadDiff)) + ' (estimate)' : '';
+  }
+  var intVal = document.getElementById('f-interval-val');
+  var intUnit = document.getElementById('f-interval-unit');
+  if (intVal && intUnit) {
+    var secs = (parseFloat(intVal.value) || 2) * parseInt(intUnit.value);
+    document.getElementById('f-interval-est').textContent = 'Every ' + blocksToTimeStr(BigInt(secs)) + ' (estimate)';
+  }
+}
+
+document.getElementById('f-start-dt').addEventListener('input', updateDateEstimates);
+document.getElementById('f-deadline-dt').addEventListener('input', updateDateEstimates);
+document.getElementById('f-interval-val').addEventListener('input', updateDateEstimates);
+document.getElementById('f-interval-unit').addEventListener('change', updateDateEstimates);
+
+// --- Create Schedule ---
+async function createSchedule() {
+  if (!account) { toast('Connect wallet first'); return; }
+  if (!CFG.scheduler) { toast('No scheduler address configured'); return; }
+
+  currentBlock = await getBlock();
+
+  var receiver = document.getElementById('f-receiver').value.trim();
+  var tokenAddr = document.getElementById('f-token').value;
+  var amountRaw = document.getElementById('f-amount').value;
+  var tipRaw = document.getElementById('f-tip').value;
+
+  var startDt = document.getElementById('f-start-dt').value;
+  var deadlineDt = document.getElementById('f-deadline-dt').value;
+  if (!startDt || !deadlineDt) {
+    toast('Set start and deadline times');
+    return;
+  }
+  var startBlock = String(dateToBlock(startDt));
+  var deadline = String(dateToBlock(deadlineDt));
+
+  var intervalBlocks = '0';
+  if (payType === 'recurring') {
+    var intVal = parseFloat(document.getElementById('f-interval-val').value) || 2;
+    var intUnit = parseInt(document.getElementById('f-interval-unit').value);
+    intervalBlocks = String(BigInt(Math.round(intVal * intUnit)));
+  }
+  var interval = intervalBlocks;
+  var count = payType === 'recurring' ? (document.getElementById('f-count').value || '3') : '1';
+
+  if (!receiver || !tokenAddr || !amountRaw) {
+    toast('Fill in receiver, token, and amount');
+    return;
+  }
+  if (!tipRaw || parseFloat(tipRaw) < 0.01) {
+    toast('Tip must be at least 0.01 to cover submitter gas');
+    return;
+  }
+
+  var tokenInfo = CFG.tokens[tokenAddr.toLowerCase()] || CFG.tokens[tokenAddr];
+  var decimals = tokenInfo ? tokenInfo.decimals : 18;
+  var amount = BigInt(Math.round(parseFloat(amountRaw) * (10 ** decimals)));
+  var tip = BigInt(Math.round(parseFloat(tipRaw || '0') * (10 ** decimals)));
+  var total = BigInt(count) * (amount + tip);
+
+  var targetHex = BigInt(startBlock).toString(16).padStart(8, '0');
+
+  try {
+    toast('Approving token spend...');
+    var approveData = SEL.approve + ABI.encodeAddr(CFG.scheduler) + ABI.encodeUint(total);
+    var approveTx = await sendTx(tokenAddr, approveData);
+    toast('Waiting for approval to confirm...');
+    await waitForTx(approveTx);
+
+    toast('Creating schedule...');
+
+    var headSlots = 11;
+    var bytesOffset = headSlots * 32;
+
+    var cd = SEL.createSchedule;
+    cd += ABI.encodeAddr(receiver);
+    cd += ABI.encodeAddr(tokenAddr);
+    cd += ABI.encodeUint(amount);
+    cd += ABI.encodeUint(tip);
+    cd += ABI.encodeAddr(CFG.processor);
+    cd += ABI.encodeUint(CFG.circuitId);
+    cd += ABI.encodeUint(bytesOffset);
+    cd += ABI.encodeUint(startBlock);
+    cd += ABI.encodeUint(interval);
+    cd += ABI.encodeUint(count);
+    cd += ABI.encodeUint(deadline);
+    cd += ABI.encodeBytes('0x' + targetHex);
+
+    var hash = await sendTx(CFG.scheduler, cd);
+    toast('Schedule created! Tx: ' + hash.slice(0,10) + '...');
+    setTimeout(function() { loadMySchedules(); }, 3000);
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+// --- Load a schedule struct ---
+var TUPLE_BASE = 64;
+
+async function loadSchedule(id) {
+  var data = await ethCall(CFG.scheduler, SEL.getSchedule + ABI.encodeUint(id));
+  var raw = data.replace('0x','');
+  var b = TUPLE_BASE;
+  return {
+    payer:     ABI.decodeAddr(raw, b + 0),
+    receiver:  ABI.decodeAddr(raw, b + 64),
+    token:     ABI.decodeAddr(raw, b + 128),
+    amount:    ABI.decodeUint(raw, b + 192),
+    tip:       ABI.decodeUint(raw, b + 256),
+    processor: ABI.decodeAddr(raw, b + 320),
+    circuitId: ABI.decodeUint(raw, b + 384),
+    startBlock:ABI.decodeUint(raw, b + 512),
+    interval:  ABI.decodeUint(raw, b + 576),
+    remaining: ABI.decodeUint(raw, b + 640),
+    deadline:  ABI.decodeUint(raw, b + 704),
+    nextDue:   ABI.decodeUint(raw, b + 768),
+    balance:   ABI.decodeUint(raw, b + 832),
+    cancelled: ABI.decodeBool(raw, b + 896),
+  };
+}
+
+// --- P mark SVG (small inline icon) ---
+var PK_MARK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 86 136 122" style="height:14px;width:auto;vertical-align:-2px" fill="currentColor"><g transform="translate(42.5 0) skewX(-12)" fill-rule="evenodd"><path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/><path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/><g transform="translate(62 135) rotate(-35)"><polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/><path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z"/><polygon points="61,-1.2 72,0 61,1.2"/><path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/></g></g></svg>';
+
+// --- Load My Schedules ---
+async function loadMySchedules() {
+  var container = document.getElementById('my-schedules-list');
+  if (!account) {
+    container.innerHTML = '<div class="empty-state"><svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="empty-state-text">Connect wallet to view your schedules</div></div>';
+    return;
+  }
+  if (!CFG.scheduler) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Configure contract address first</div></div>';
+    return;
+  }
+
+  try {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Loading...</div></div>';
+
+    var idsData = await ethCall(CFG.scheduler, SEL.schedulesOf + ABI.encodeAddr(account));
+    var raw = idsData.replace('0x', '');
+    var offset = Number(ABI.decodeUint(raw, 0)) * 2;
+    var len = Number(ABI.decodeUint(raw, offset));
+
+    if (len === 0) {
+      container.innerHTML = '<div class="empty-state"><svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="empty-state-text">No schedules yet</div><div class="empty-state-hint">Create your first scheduled payment</div></div>';
+      return;
+    }
+
+    currentBlock = await getBlock();
+    var html = '';
+
+    for (var i = 0; i < len; i++) {
+      var id = ABI.decodeUint(raw, offset + 64 + i * 64);
+      try {
+        var schedule = await loadSchedule(id);
+      } catch(e) { continue; }
+
+      var tokenInfo = CFG.tokens[schedule.token.toLowerCase()] || CFG.tokens[schedule.token] || { symbol: '???', decimals: 18 };
+      var amountFmt = formatTokenAmount(schedule.amount, tokenInfo.decimals);
+      var tipFmt = formatTokenAmount(schedule.tip, tokenInfo.decimals);
+
+      var statusClass, statusText;
+      if (schedule.cancelled) {
+        statusClass = 'status-cancelled'; statusText = 'Cancelled';
+      } else if (schedule.remaining === 0n) {
+        statusClass = 'status-done'; statusText = 'Completed';
+      } else if (currentBlock > schedule.deadline) {
+        statusClass = 'status-cancelled'; statusText = 'Expired';
+      } else if (currentBlock >= schedule.nextDue) {
+        statusClass = 'status-ready'; statusText = PK_MARK + ' Ready';
+      } else {
+        statusClass = 'status-waiting'; statusText = 'Waiting';
+      }
+
+      var actions = '';
+      if (!schedule.cancelled && schedule.remaining > 0n && currentBlock <= schedule.deadline) {
+        actions = '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();cancelSchedule(' + id + 'n)">Cancel</button>';
+      }
+      if (!schedule.cancelled && schedule.remaining > 0n && currentBlock > schedule.deadline && schedule.balance > 0n) {
+        actions = '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();reclaimSchedule(' + id + 'n)">Reclaim</button>';
+      }
+
+      var nextDueStr = '';
+      if (schedule.remaining > 0n && !schedule.cancelled) {
+        var diff = schedule.nextDue - currentBlock;
+        if (diff <= 0n) nextDueStr = 'Now';
+        else nextDueStr = 'in ' + blocksToTimeStr(diff);
+      }
+
+      html += '<div class="schedule-card" onclick="showScheduleDetail(' + id + 'n)">'
+        + '<div class="schedule-card-header">'
+        + '<div>'
+        + '<div class="schedule-card-id">Schedule #' + id + '</div>'
+        + '<div class="schedule-card-amount">' + amountFmt + ' ' + tokenInfo.symbol + '</div>'
+        + '<div class="schedule-card-receiver">To: ' + schedule.receiver.slice(0,10) + '...' + schedule.receiver.slice(-6) + '</div>'
+        + '</div>'
+        + '<span class="status ' + statusClass + '">' + statusText + '</span>'
+        + '</div>'
+        + '<div class="schedule-card-footer">'
+        + '<div class="schedule-card-meta">'
+        + '<span>Tip: ' + tipFmt + '</span>'
+        + '<span>Runs: ' + schedule.remaining + '</span>'
+        + (nextDueStr ? '<span>Next: ' + nextDueStr + '</span>' : '')
+        + '</div>'
+        + actions
+        + '</div>'
+        + '</div>';
+    }
+
+    container.innerHTML = html || '<div class="empty-state"><div class="empty-state-text">No schedules found</div></div>';
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Error loading: ' + e.message + '</div></div>';
+  }
+}
+
+// --- Load Due Payments (public) ---
+async function loadDuePayments() {
+  var container = document.getElementById('due-list');
+  if (!CFG.scheduler) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Configure contract address first</div></div>';
+    return;
+  }
+
+  try {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Scanning...</div></div>';
+
+    var countData = await ethCall(CFG.scheduler, SEL.scheduleCount);
+    var count = Number(ABI.decodeUint(countData.replace('0x',''), 0));
+
+    if (count === 0) {
+      container.innerHTML = '<div class="empty-state"><svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><div class="empty-state-text">No schedules exist yet</div></div>';
+      return;
+    }
+
+    currentBlock = await getBlock();
+    var html = '';
+    var dueCount = 0;
+
+    for (var i = 1; i <= count; i++) {
+      try {
+        var readyData = await ethCall(CFG.scheduler, SEL.isReady + ABI.encodeUint(i));
+        var isReady = ABI.decodeBool(readyData.replace('0x',''), 0);
+        if (!isReady) continue;
+
+        var schedule = await loadSchedule(BigInt(i));
+        var tokenInfo = CFG.tokens[schedule.token.toLowerCase()] || CFG.tokens[schedule.token] || { symbol: '???', decimals: 18 };
+        var amountFmt = formatTokenAmount(schedule.amount, tokenInfo.decimals);
+        var tipFmt = formatTokenAmount(schedule.tip, tokenInfo.decimals);
+
+        dueCount++;
+        html += '<div class="due-card">'
+          + '<div class="due-card-header">'
+          + '<div>'
+          + '<div class="due-card-amount">' + PK_MARK + ' ' + amountFmt + ' ' + tokenInfo.symbol + '</div>'
+          + '<div class="due-card-info">To: ' + schedule.receiver.slice(0,10) + '...' + schedule.receiver.slice(-6) + '</div>'
+          + '</div>'
+          + '</div>'
+          + '<div style="display:flex;align-items:center;justify-content:space-between">'
+          + '<span class="tip-badge">Earn ' + tipFmt + ' ' + tokenInfo.symbol + ' tip</span>'
+          + '<button class="btn btn-success btn-sm" onclick="executeSchedule(' + i + 'n)">Submit</button>'
+          + '</div>'
+          + '</div>';
+      } catch(e) {}
+    }
+
+    if (dueCount === 0) {
+      container.innerHTML = '<div class="empty-state"><svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><div class="empty-state-text">No payments are due right now</div><div class="empty-state-hint">Check back soon</div></div>';
+    } else {
+      container.innerHTML = html;
+    }
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Error: ' + e.message + '</div></div>';
+  }
+}
+
+// --- Schedule actions ---
+async function executeSchedule(id) {
+  if (!account) { toast('Connect wallet first'); return; }
+  try {
+    toast('Submitting payment...');
+    var hash = await sendTx(CFG.scheduler, SEL.execute + ABI.encodeUint(id));
+    toast('Submitted! Tx: ' + hash.slice(0,10) + '...');
+    setTimeout(function() { loadDuePayments(); }, 3000);
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+async function cancelSchedule(id) {
+  if (!account) return;
+  try {
+    toast('Cancelling...');
+    var hash = await sendTx(CFG.scheduler, SEL.cancel + ABI.encodeUint(id));
+    toast('Cancelled! Tx: ' + hash.slice(0,10) + '...');
+    setTimeout(function() { loadMySchedules(); }, 3000);
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+async function reclaimSchedule(id) {
+  if (!account) return;
+  try {
+    toast('Reclaiming...');
+    var hash = await sendTx(CFG.scheduler, SEL.reclaim + ABI.encodeUint(id));
+    toast('Reclaimed! Tx: ' + hash.slice(0,10) + '...');
+    setTimeout(function() { loadMySchedules(); }, 3000);
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+// --- Schedule detail modal ---
+async function showScheduleDetail(id) {
+  try {
+    currentBlock = await getBlock();
+    var s = await loadSchedule(id);
+    var tokenInfo = CFG.tokens[s.token.toLowerCase()] || CFG.tokens[s.token] || { symbol: '???', decimals: 18 };
+    var amtFmt = formatTokenAmount(s.amount, tokenInfo.decimals);
+    var tipFmt = formatTokenAmount(s.tip, tokenInfo.decimals);
+    var balFmt = formatTokenAmount(s.balance, tokenInfo.decimals);
+
+    var statusText;
+    if (s.cancelled) statusText = 'Cancelled';
+    else if (s.remaining === 0n) statusText = 'Completed';
+    else if (currentBlock > s.deadline) statusText = 'Expired';
+    else if (currentBlock >= s.nextDue) statusText = 'Ready';
+    else statusText = 'Waiting';
+
+    var startDate = formatDate(blockToDate(s.startBlock));
+    var deadlineDate = formatDate(blockToDate(s.deadline));
+    var nextDueDate = s.remaining > 0n ? formatDate(blockToDate(s.nextDue)) : '—';
+
+    var intervalStr = '—';
+    if (s.interval > 0n) {
+      intervalStr = blocksToTimeStr(s.interval);
+    }
+
+    var rows = [
+      ['Status', statusText],
+      ['Amount', amtFmt + ' ' + tokenInfo.symbol],
+      ['Tip', tipFmt + ' ' + tokenInfo.symbol],
+      ['Receiver', s.receiver],
+      ['Payer', s.payer],
+      ['Start', startDate + ' (est.)'],
+      ['Deadline', deadlineDate + ' (est.)'],
+      ['Next due', nextDueDate + (s.remaining > 0n ? ' (est.)' : '')],
+      ['Interval', intervalStr],
+      ['Runs left', String(s.remaining)],
+      ['Balance locked', balFmt + ' ' + tokenInfo.symbol],
+      ['Token', s.token],
+    ];
+
+    var html = '<div class="modal-handle"></div>';
+    html += '<h2>Schedule #' + id + '</h2>';
+    for (var i = 0; i < rows.length; i++) {
+      html += '<div class="detail-row"><span class="detail-label">' + rows[i][0] + '</span><span class="detail-val">' + rows[i][1] + '</span></div>';
+    }
+    html += '<button class="close-btn" onclick="closeModal()">Close</button>';
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('active');
+  } catch(e) {
+    toast('Error loading details: ' + e.message);
+  }
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('active');
+  }
+}
+
+// --- Helpers ---
+function formatTokenAmount(wei, decimals) {
+  if (wei === 0n) return '0.00';
+  var str = wei.toString().padStart(decimals + 1, '0');
+  var whole = str.slice(0, str.length - decimals) || '0';
+  var frac = str.slice(str.length - decimals, str.length - decimals + 2);
+  return whole + '.' + frac;
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function() { el.style.display = 'none'; }, 4000);
+}
+
+// --- Init ---
+initConfig();
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', function(accs) {
+    account = accs[0] || null;
+    if (account) {
+      var addrEl = document.getElementById('walletAddr');
+      addrEl.textContent = account.slice(0,6) + '...' + account.slice(-4);
+      addrEl.classList.add('visible');
+      loadMySchedules();
+    }
+  });
+  window.ethereum.on('chainChanged', function() { window.location.reload(); });
+}
+</script>
+<script>
+(function () {
+  var REST = -35, TICK_MS = 300, HOLD_TICKS = 6, START_AMP = 26, DAMPING = 3;
+  var root = document.getElementById('splash');
+  if (!root) return;
+  var anim = root.querySelector('.pk-anim');
+  var hand = anim.querySelector('.pk-hand');
+  var letters = Array.from(anim.querySelectorAll('.pk-letter'));
+  var tagline = anim.querySelector('.pk-tagline');
+  function setAngle(deg) { hand.style.transform = 'rotate(' + deg + 'deg)'; }
+  function dismiss() {
+    root.classList.add('fade-out');
+    setTimeout(function() { root.style.display = 'none'; }, 700);
+  }
+  function showFinished() {
+    setAngle(REST);
+    letters.forEach(function(l) { l.classList.add('is-on'); });
+    tagline.classList.add('is-on');
+  }
+
+  var shown = 0, hold = 0;
+  setAngle(REST);
+  var timer = setInterval(function() {
+    if (shown < letters.length) {
+      shown++;
+      var amp = START_AMP - DAMPING * (shown - 1);
+      var side = shown % 2 === 1 ? -1 : 1;
+      setAngle(REST + side * amp);
+      letters[shown - 1].classList.add('is-on');
+    } else if (hold < HOLD_TICKS) {
+      if (hold === 0) { setAngle(REST); tagline.classList.add('is-on'); }
+      hold++;
+      if (hold === HOLD_TICKS) { clearInterval(timer); dismiss(); }
+    }
+  }, TICK_MS);
+
+  root.addEventListener('click', function() { clearInterval(timer); showFinished(); dismiss(); });
+})();
+</script>
+</body>
+</html>

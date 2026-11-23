@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 380" role="img" aria-label="Prokairos badge">
+  <!-- Circular badge. Colour follows CSS `color`. Ring text uses the font "Jost" 500 if loaded. -->
+  <defs>
+    <path id="pk-ring" d="M190 190 m-146 0 a146 146 0 1 1 292 0 a146 146 0 1 1 -292 0"/>
+  </defs>
+  <text font-family="Jost, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="500" fill="currentColor" letter-spacing="5">
+    <textPath href="#pk-ring" startOffset="0" textLength="900" lengthAdjust="spacing">PROKAIROS · PAID AT THE RIGHT TIME ·</textPath>
+  </text>
+  <g transform="translate(62.5 -30.5) scale(1.5)">
+    <g transform="translate(42.5 0) skewX(-12)" fill="currentColor" fill-rule="evenodd">
+      <path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/>
+      <path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/>
+      <g transform="translate(62 135) rotate(-35)">
+        <polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/>
+        <path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z M46.5 0 C50 -3.5 54 -3.5 57.5 0 C54 3.5 50 3.5 46.5 0 Z"/>
+        <polygon points="61,-1.2 72,0 61,1.2"/>
+        <path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

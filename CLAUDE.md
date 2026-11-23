@@ -1,6 +1,6 @@
-# CLAUDE.md: CircuitPay (X Layer TapeOut Accelerate hackathon)
+# CLAUDE.md: Prokairos (X Layer TapeOut Accelerate hackathon)
 
-You are helping me (a student developer) design and build **CircuitPay**: circuit-triggered scheduled
+You are helping me (a student developer) design and build **Prokairos**: circuit-triggered scheduled
 payments on X Layer. Act as my senior engineer and architect: plan before coding, explain decisions
 simply, keep scope small, and push back when something is risky or will not fit the deadline.
 

@@ -1,4 +1,4 @@
-# CircuitPay — Decisions Log
+# Prokairos — Decisions Log
 
 ## Day-1 Checks (2026-11-22)
 
@@ -124,3 +124,18 @@ For combinational circuits (our MVP), this is irrelevant — `eval()` is pure an
 - **Development + tests:** Local Foundry + mock processor.
 - **Integration testing:** X Layer testnet (1952) with mock processor + mock ERC-20.
 - **Demo:** X Layer mainnet (196) with real TapeOut circuit + real USDC.
+
+---
+
+## Testnet Deployment (2026-11-22)
+
+**Chain:** X Layer testnet (1952) | **Block:** 46910534 | **Deployer:** `0xA21978b79287bEA930aD287BA9F48bBD302d695c`
+
+| Contract | Address |
+|----------|---------|
+| MockProcessor | `0x981F01Cd1a393584Ab764A51e8F6aa274C6a84f0` |
+| MockERC20 (USDC, 6 decimals) | `0xe53e27F9301033265aF1464fbacE515B7FaDA796` |
+| CircuitScheduler | `0xa679f1bA885c1e08D9C247992B32D80E847DC5aC` |
+
+MockProcessor circuit ID 1 is set to return `true` (always-go) for testing.
+Total gas cost: ~0.00004 OKB.
