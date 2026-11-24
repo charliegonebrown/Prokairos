@@ -5,6 +5,7 @@ import {
   webSocket,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { createServer } from "node:http";
 import { loadConfig } from "./config.js";
 import { Indexer } from "./indexer.js";
 import { Executor } from "./executor.js";
@@ -51,6 +52,12 @@ async function main() {
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
+
+  const port = parseInt(process.env.PORT || "10000");
+  createServer((_req, res) => {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok", block: Number(lastBlock) }));
+  }).listen(port, () => console.log(`[main] Health endpoint on :${port}`));
 
   console.log(`[main] Watching from block ${lastBlock}. Poll: ${config.pollIntervalMs}ms`);
 

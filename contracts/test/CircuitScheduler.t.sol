@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {CircuitScheduler} from "../src/CircuitScheduler.sol";
 import {MockProcessor} from "../src/mocks/MockProcessor.sol";
 import {MockERC20} from "../src/mocks/MockERC20.sol";
+import {ReentrantToken} from "../src/mocks/ReentrantToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract CircuitSchedulerTest is Test {
@@ -422,5 +423,114 @@ contract CircuitSchedulerTest is Test {
         assertEq(scheduler.scheduleCount(), 1);
         _createOneTime(block.number + 20, block.number + 200);
         assertEq(scheduler.scheduleCount(), 2);
+    }
+
+    // --- Reentrancy tests ---
+
+    function test_execute_reentrancyBlocked() public {
+        ReentrantToken malicious = new ReentrantToken();
+        malicious.mint(payer, 1000e6);
+        vm.prank(payer);
+        malicious.approve(address(scheduler), type(uint256).max);
+
+        processor.setResultBool(CIRCUIT_ID, true);
+
+        vm.prank(payer);
+        uint256 id = scheduler.createSchedule(
+            receiver,
+            IERC20(address(malicious)),
+            AMOUNT,
+            TIP,
+            address(processor),
+            CIRCUIT_ID,
+            "",
+            block.number + 10,
+            50,
+            3,
+            block.number + 1000
+        );
+
+        malicious.arm(address(scheduler), id);
+        vm.roll(block.number + 10);
+
+        vm.prank(submitter);
+        scheduler.execute(id);
+
+        // Only one run should have executed despite reentrancy attempt
+        CircuitScheduler.Schedule memory s = scheduler.getSchedule(id);
+        assertEq(s.remaining, 2);
+        assertEq(malicious.balanceOf(receiver), AMOUNT);
+    }
+
+    // --- Event tests ---
+
+    event ScheduleCreated(
+        uint256 indexed id, address indexed payer, address indexed receiver,
+        address token, uint256 amount, uint256 tip, address processor,
+        uint256 circuitId, uint256 startBlock, uint256 interval, uint256 remaining, uint256 deadline
+    );
+    event ScheduleExecuted(
+        uint256 indexed id, address indexed submitter, address indexed receiver,
+        uint256 amount, uint256 tip, uint256 runsLeft
+    );
+    event ScheduleCancelled(uint256 indexed id, uint256 refunded);
+    event ScheduleReclaimed(uint256 indexed id, uint256 refunded);
+
+    function test_event_scheduleCreated() public {
+        uint256 startBlock = block.number + 10;
+        uint256 deadline = block.number + 100;
+
+        vm.expectEmit(true, true, true, true);
+        emit ScheduleCreated(
+            1, payer, receiver, address(token), AMOUNT, TIP,
+            address(processor), CIRCUIT_ID, startBlock, 0, 1, deadline
+        );
+
+        _createOneTime(startBlock, deadline);
+    }
+
+    function test_event_scheduleExecuted() public {
+        uint256 id = _createOneTime(block.number + 10, block.number + 100);
+        vm.roll(block.number + 10);
+
+        vm.expectEmit(true, true, true, true);
+        emit ScheduleExecuted(id, submitter, receiver, AMOUNT, TIP, 0);
+
+        vm.prank(submitter);
+        scheduler.execute(id);
+    }
+
+    function test_event_scheduleCancelled() public {
+        uint256 id = _createOneTime(block.number + 10, block.number + 100);
+
+        vm.expectEmit(true, false, false, true);
+        emit ScheduleCancelled(id, AMOUNT + TIP);
+
+        vm.prank(payer);
+        scheduler.cancel(id);
+    }
+
+    function test_event_scheduleReclaimed() public {
+        uint256 id = _createOneTime(block.number + 10, block.number + 100);
+        processor.setResultBool(CIRCUIT_ID, false);
+        vm.roll(block.number + 101);
+
+        vm.expectEmit(true, false, false, true);
+        emit ScheduleReclaimed(id, AMOUNT + TIP);
+
+        vm.prank(payer);
+        scheduler.reclaim(id);
+    }
+
+    // --- startBlock in past ---
+
+    function test_createSchedule_revertsStartBlockInPast() public {
+        vm.roll(100);
+        vm.prank(payer);
+        vm.expectRevert(CircuitScheduler.InvalidSchedule.selector);
+        scheduler.createSchedule(
+            receiver, IERC20(address(token)), AMOUNT, TIP,
+            address(processor), CIRCUIT_ID, "", block.number - 1, 0, 1, block.number + 100
+        );
     }
 }
