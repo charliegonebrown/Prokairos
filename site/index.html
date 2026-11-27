@@ -136,6 +136,147 @@ body {
   margin-bottom: 20px;
 }
 
+/* ===== HOME / LANDING ===== */
+.home-hero {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+.home-title {
+  font-family: var(--pk-font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+  color: var(--pk-maroon);
+  margin-bottom: 12px;
+}
+.home-tagline {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 440px;
+  margin: 0 auto 24px;
+}
+.home-cta {
+  font-size: 16px;
+  padding: 14px 32px;
+  border-radius: 12px;
+}
+.home-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.home-section-title {
+  font-family: var(--pk-font-display);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--pk-maroon);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+}
+.hiw-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  position: relative;
+}
+.hiw-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--pk-maroon);
+  color: var(--pk-cream);
+  font-family: var(--pk-font-display);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hiw-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--pk-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pk-maroon);
+}
+.hiw-icon svg { width: 24px; height: 24px; }
+.hiw-label {
+  font-family: var(--pk-font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--pk-maroon);
+}
+.hiw-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Features grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.feature-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.feature-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--pk-cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pk-maroon);
+  margin-bottom: 8px;
+}
+.feature-icon svg { width: 20px; height: 20px; }
+.feature-title {
+  font-family: var(--pk-font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--pk-maroon);
+  margin-bottom: 4px;
+}
+.feature-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.home-footer {
+  text-align: center;
+  padding: 24px 0 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.home-footer strong { color: var(--pk-maroon); }
+.home-footer .home-cta { margin-top: 16px; }
+
+@media (max-width: 380px) {
+  .home-title { font-size: 26px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .hiw-steps { grid-template-columns: 1fr 1fr; }
+}
+
 /* ===== CARDS ===== */
 .card {
   background: var(--surface);
@@ -320,6 +461,75 @@ body {
   font-size: 12px; color: var(--muted);
 }
 .schedule-card-meta span { display: flex; align-items: center; gap: 4px; }
+.circuit-indicator {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+.circuit-indicator .ci-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.circuit-go { background: rgba(46,125,50,0.1); color: var(--success); }
+.circuit-go .ci-dot { background: var(--success); animation: ci-pulse 1.5s ease infinite; }
+.circuit-wait { background: rgba(191,87,0,0.08); color: var(--warning); }
+.circuit-wait .ci-dot { background: var(--warning); }
+.circuit-na { background: rgba(107,79,58,0.06); color: var(--muted); }
+.circuit-na .ci-dot { background: var(--muted); }
+@keyframes ci-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* Activity items */
+.activity-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.activity-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.activity-icon svg { width: 18px; height: 18px; }
+.activity-icon.act-exec { background: rgba(46,125,50,0.1); color: var(--success); }
+.activity-icon.act-create { background: rgba(74,28,20,0.08); color: var(--pk-maroon); }
+.activity-icon.act-cancel { background: rgba(198,40,40,0.08); color: var(--danger); }
+.activity-icon.act-reclaim { background: rgba(191,87,0,0.08); color: var(--warning); }
+.activity-body { flex: 1; min-width: 0; }
+.activity-title {
+  font-size: 14px; font-weight: 500;
+  color: var(--text);
+}
+.activity-title .act-amount {
+  font-family: var(--pk-font-display);
+  font-weight: 600;
+  color: var(--pk-maroon);
+}
+.activity-detail {
+  font-size: 12px; color: var(--muted);
+  margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.activity-block {
+  font-size: 11px; color: var(--muted);
+  flex-shrink: 0;
+  text-align: right;
+}
 
 /* Due payment cards */
 .due-card {
@@ -528,7 +738,7 @@ body {
 <!-- HEADER -->
 <header class="app-header">
   <div class="header-inner">
-    <a href="#" class="logo-link" onclick="showPage('create');return false">
+    <a href="#" class="logo-link" onclick="showPage('home',document.querySelectorAll('.nav-item')[0]);return false">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="20 80 564 135" fill="currentColor" role="img" aria-label="Prokairos"><g transform="translate(42.5 0) skewX(-12)" fill-rule="evenodd"><path d="M28 104 H46.5 V192 L52 200 H26 L33.5 192 V110 L28 108 Z"/><path d="M46 110 C72 104 98 110 98 134 C98 156 74 164 46 160 L46 151 C66 153 81 147 81 134 C81 121 66 115 46 119 Z"/><g transform="translate(62 135) rotate(-35)"><polygon points="-40,-1.5 44,-2 44,2 -40,1.5"/><path d="M42 0 C48 -7 56 -7 62 0 C56 7 48 7 42 0 Z M46.5 0 C50 -3.5 54 -3.5 57.5 0 C54 3.5 50 3.5 46.5 0 Z"/><polygon points="61,-1.2 72,0 61,1.2"/><path d="M-39 0 C-43 -5 -49 -5 -53 0 C-49 5 -43 5 -39 0 Z"/></g></g><text x="104" y="200" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" font-size="150" fill="currentColor" textLength="470" lengthAdjust="spacing">rokairos</text></svg>
     </a>
     <div class="header-right">
@@ -545,7 +755,11 @@ body {
 
 <!-- NAVIGATION -->
 <nav class="bottom-nav">
-  <button class="nav-item active" onclick="showPage('create',this)">
+  <button class="nav-item active" onclick="showPage('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </button>
+  <button class="nav-item" onclick="showPage('create',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
     Create
   </button>
@@ -557,12 +771,103 @@ body {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
     Due
   </button>
+  <button class="nav-item" onclick="showPage('activity',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Activity
+  </button>
 </nav>
 
 <main class="app-main">
 
   <!-- CREATE PAGE -->
-  <div id="page-create" class="page active">
+  <!-- HOME / LANDING PAGE -->
+  <div id="page-home" class="page active">
+    <div class="home-hero">
+      <h1 class="home-title">Circuit-Triggered<br>Scheduled Payments</h1>
+      <p class="home-tagline">Sign a payment once. A TapeOut circuit decides when it unlocks. Our server delivers it — and anyone can deliver it if we go down.</p>
+      <button class="btn btn-primary home-cta" onclick="showPage('create',document.querySelectorAll('.nav-item')[1])">Start Scheduling</button>
+    </div>
+
+    <div class="home-section">
+      <h2 class="home-section-title">How It Works</h2>
+      <div class="hiw-steps">
+        <div class="hiw-step">
+          <div class="hiw-num">1</div>
+          <div class="hiw-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="hiw-label">Schedule</div>
+          <div class="hiw-desc">Set receiver, amount, start time, and how often to pay. Funds are locked in the contract.</div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-num">2</div>
+          <div class="hiw-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div class="hiw-label">Circuit Gates</div>
+          <div class="hiw-desc">A TapeOut on-chain circuit (built from NAND gates) checks whether conditions are met.</div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-num">3</div>
+          <div class="hiw-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="hiw-label">Auto-Deliver</div>
+          <div class="hiw-desc">Our server watches every block and executes payments the moment the circuit outputs 1.</div>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-num">4</div>
+          <div class="hiw-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="hiw-label">Or Anyone Can</div>
+          <div class="hiw-desc">If the server goes down, anyone can submit the payment from the Due page and earn the tip.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-section">
+      <h2 class="home-section-title">Why Prokairos</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <div class="feature-title">Non-Custodial</div>
+          <div class="feature-desc">Funds sit in the smart contract. Only the receiver, the tip, or a refund to you can ever leave.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="feature-title">Circuit-Gated</div>
+          <div class="feature-desc">TapeOut hardware-style logic on-chain. No oracle, no off-chain data — pure deterministic gates.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
+          </div>
+          <div class="feature-title">Decentralized Fallback</div>
+          <div class="feature-desc">Anyone can execute a due payment. The tip creates an open execution market.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="feature-title">Stablecoin Native</div>
+          <div class="feature-desc">Pay in USDC or USDT on X Layer. Fast, cheap, and denominated in dollars.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <p>Built on <strong>X Layer</strong> &middot; Powered by <strong>TapeOut</strong> circuits</p>
+      <button class="btn btn-primary home-cta" onclick="showPage('create',document.querySelectorAll('.nav-item')[1])">Start Scheduling</button>
+    </div>
+  </div>
+
+  <!-- CREATE PAGE -->
+  <div id="page-create" class="page">
     <h2 class="page-title">New Payment</h2>
     <p class="page-subtitle">Schedule a one-time or recurring stablecoin transfer</p>
 
@@ -676,6 +981,18 @@ body {
     </div>
   </div>
 
+  <!-- ACTIVITY PAGE -->
+  <div id="page-activity" class="page">
+    <h2 class="page-title">Activity</h2>
+    <p class="page-subtitle">Recent on-chain events from the contract</p>
+    <div id="activity-list">
+      <div class="empty-state">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <div class="empty-state-text">Loading activity...</div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- MODAL -->
@@ -692,8 +1009,8 @@ body {
 
 // --- Config (testnet defaults) ---
 var DEFAULTS = {
-  scheduler: '0xa679f1bA885c1e08D9C247992B32D80E847DC5aC',
-  processor: '0x981F01Cd1a393584Ab764A51e8F6aa274C6a84f0',
+  scheduler: '0x981F01Cd1a393584Ab764A51e8F6aa274C6a84f0',
+  processor: '0xb00f10bb4b2e32c561bf90e205e543d0a2395971',
   tokens: {
     // Testnet (1952)
     '1952': {
@@ -719,7 +1036,7 @@ var CFG = {
 function initConfig() {
   try {
     CFG.scheduler = localStorage.getItem('cp_scheduler') || DEFAULTS.scheduler;
-    CFG.chainId = parseInt(localStorage.getItem('cp_chainId') || '1952');
+    CFG.chainId = parseInt(localStorage.getItem('cp_chainId') || '196');
     CFG.rpcUrl = localStorage.getItem('cp_rpc') || (CFG.chainId === 196 ? 'https://rpc.xlayer.tech' : 'https://testrpc.xlayer.tech');
     CFG.processor = localStorage.getItem('cp_processor') || DEFAULTS.processor;
     CFG.circuitId = localStorage.getItem('cp_circuitId') || '1';
@@ -919,6 +1236,7 @@ async function ethCall(to, data) {
 
 async function sendTx(to, data) {
   if (!window.ethereum) throw new Error('No wallet');
+  await ensureCorrectNetwork();
   return window.ethereum.request({
     method: 'eth_sendTransaction',
     params: [{ from: account, to: to, data: data }],
@@ -943,12 +1261,42 @@ async function getBlock() {
 }
 
 // --- Wallet ---
+async function ensureCorrectNetwork() {
+  if (!window.ethereum) return;
+  var chainHex = '0x' + CFG.chainId.toString(16);
+  try {
+    var currentChain = await window.ethereum.request({ method: 'eth_chainId' });
+    if (currentChain.toLowerCase() === chainHex.toLowerCase()) return;
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: chainHex }],
+    });
+  } catch (switchErr) {
+    if (switchErr.code === 4902) {
+      var isMainnet = CFG.chainId === 196;
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: chainHex,
+          chainName: isMainnet ? 'X Layer' : 'X Layer Testnet',
+          nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
+          rpcUrls: [isMainnet ? 'https://rpc.xlayer.tech' : 'https://testrpc.xlayer.tech'],
+          blockExplorerUrls: [isMainnet ? 'https://www.oklink.com/xlayer' : 'https://www.oklink.com/xlayer-test'],
+        }],
+      });
+    } else {
+      throw switchErr;
+    }
+  }
+}
+
 async function connectWallet() {
   if (!window.ethereum) {
     toast('Please install MetaMask or another wallet');
     return;
   }
   try {
+    await ensureCorrectNetwork();
     var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     account = accounts[0];
     var btn = document.getElementById('connectBtn');
@@ -974,6 +1322,7 @@ function showPage(name, btn) {
 
   if (name === 'schedules' && account) loadMySchedules();
   if (name === 'due') loadDuePayments();
+  if (name === 'activity') loadActivity();
 }
 
 var payType = 'onetime';
@@ -1146,8 +1495,11 @@ async function createSchedule() {
     cd += ABI.encodeBytes('0x' + targetHex);
 
     var hash = await sendTx(CFG.scheduler, cd);
-    toast('Schedule created! Tx: ' + hash.slice(0,10) + '...');
-    setTimeout(function() { loadMySchedules(); }, 3000);
+    toast('Waiting for confirmation...');
+    await waitForTx(hash);
+    toast('Schedule created!');
+    showPage('schedules', document.querySelectorAll('.nav-item')[2]);
+    loadMySchedules();
   } catch(e) {
     toast('Error: ' + e.message);
   }
@@ -1247,12 +1599,28 @@ async function loadMySchedules() {
         else nextDueStr = 'in ' + blocksToTimeStr(diff);
       }
 
+      var circuitHtml = '';
+      if (!schedule.cancelled && schedule.remaining > 0n && currentBlock <= schedule.deadline) {
+        try {
+          var readyData = await ethCall(CFG.scheduler, SEL.isReady + ABI.encodeUint(id));
+          var circuitReady = ABI.decodeBool(readyData.replace('0x',''), 0);
+          if (circuitReady) {
+            circuitHtml = '<div class="circuit-indicator circuit-go"><span class="ci-dot"></span>Circuit: 1 (go)</div>';
+          } else {
+            circuitHtml = '<div class="circuit-indicator circuit-wait"><span class="ci-dot"></span>Circuit: 0 (wait)</div>';
+          }
+        } catch(e) {
+          circuitHtml = '<div class="circuit-indicator circuit-na"><span class="ci-dot"></span>Circuit: ?</div>';
+        }
+      }
+
       html += '<div class="schedule-card" onclick="showScheduleDetail(' + id + 'n)">'
         + '<div class="schedule-card-header">'
         + '<div>'
         + '<div class="schedule-card-id">Schedule #' + id + '</div>'
         + '<div class="schedule-card-amount">' + amountFmt + ' ' + tokenInfo.symbol + '</div>'
         + '<div class="schedule-card-receiver">To: ' + schedule.receiver.slice(0,10) + '...' + schedule.receiver.slice(-6) + '</div>'
+        + circuitHtml
         + '</div>'
         + '<span class="status ' + statusClass + '">' + statusText + '</span>'
         + '</div>'
@@ -1339,8 +1707,10 @@ async function executeSchedule(id) {
   try {
     toast('Submitting payment...');
     var hash = await sendTx(CFG.scheduler, SEL.execute + ABI.encodeUint(id));
-    toast('Submitted! Tx: ' + hash.slice(0,10) + '...');
-    setTimeout(function() { loadDuePayments(); }, 3000);
+    toast('Waiting for confirmation...');
+    await waitForTx(hash);
+    toast('Payment executed! Tip earned.');
+    loadDuePayments();
   } catch(e) {
     toast('Error: ' + e.message);
   }
@@ -1351,8 +1721,11 @@ async function cancelSchedule(id) {
   try {
     toast('Cancelling...');
     var hash = await sendTx(CFG.scheduler, SEL.cancel + ABI.encodeUint(id));
-    toast('Cancelled! Tx: ' + hash.slice(0,10) + '...');
-    setTimeout(function() { loadMySchedules(); }, 3000);
+    toast('Waiting for confirmation...');
+    await waitForTx(hash);
+    toast('Schedule cancelled! Funds refunded.');
+    closeModal();
+    loadMySchedules();
   } catch(e) {
     toast('Error: ' + e.message);
   }
@@ -1363,11 +1736,120 @@ async function reclaimSchedule(id) {
   try {
     toast('Reclaiming...');
     var hash = await sendTx(CFG.scheduler, SEL.reclaim + ABI.encodeUint(id));
-    toast('Reclaimed! Tx: ' + hash.slice(0,10) + '...');
-    setTimeout(function() { loadMySchedules(); }, 3000);
+    toast('Waiting for confirmation...');
+    await waitForTx(hash);
+    toast('Funds reclaimed!');
+    closeModal();
+    loadMySchedules();
   } catch(e) {
     toast('Error: ' + e.message);
   }
+}
+
+// --- Activity ---
+var EVENT_TOPICS = {
+  executed:  '0xce0e119f733947fe23acf313305e263c7d5f7994d12e9bed683da737840ed8e7',
+  created:   '0xaa897dfa8c201dbc5e3a81c8f11fe3c8125cc90168aadf93f66969a8c8ccbebb',
+  cancelled: '0xea205aa7c97ee2b59100a9e605051d956596ccba0243880b99c390dd2c29c0c0',
+  reclaimed: '0x7726c33d683581679cf8749557e5c687ca56a1e8dcc2042817cdc020dcc63b53',
+};
+
+async function loadActivity() {
+  var container = document.getElementById('activity-list');
+  if (!CFG.scheduler) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Configure contract address first</div></div>';
+    return;
+  }
+  try {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Loading activity...</div></div>';
+    currentBlock = await getBlock();
+    var fromBlock = '0x' + (currentBlock - 50000n > 0n ? (currentBlock - 50000n) : 0n).toString(16);
+
+    var logs = await rpcCall('eth_getLogs', [{
+      address: CFG.scheduler,
+      fromBlock: fromBlock,
+      toBlock: 'latest',
+      topics: [[EVENT_TOPICS.executed, EVENT_TOPICS.created, EVENT_TOPICS.cancelled, EVENT_TOPICS.reclaimed]],
+    }]);
+
+    if (!logs || logs.length === 0) {
+      container.innerHTML = '<div class="empty-state"><svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><div class="empty-state-text">No activity yet</div><div class="empty-state-hint">Events will appear here when schedules are created or executed</div></div>';
+      return;
+    }
+
+    logs.reverse();
+    var html = '';
+    var shown = 0;
+
+    for (var j = 0; j < logs.length && shown < 50; j++) {
+      var log = logs[j];
+      var topic = log.topics[0].toLowerCase();
+      var blockNum = BigInt(log.blockNumber);
+      var blocksAgo = currentBlock - blockNum;
+      var timeAgo = blocksToTimeStr(blocksAgo) + ' ago';
+
+      var iconClass, iconSvg, title, detail;
+
+      if (topic === EVENT_TOPICS.executed) {
+        var schedId = BigInt(log.topics[1]);
+        var submitter = '0x' + log.topics[2].slice(26);
+        var receiver = '0x' + log.topics[3].slice(26);
+        var amount = BigInt('0x' + log.data.slice(2, 66));
+        var tip = BigInt('0x' + log.data.slice(66, 130));
+        var tokenInfo = guessToken(amount);
+        var amtStr = formatTokenAmount(amount, tokenInfo.decimals);
+        var tipStr = formatTokenAmount(tip, tokenInfo.decimals);
+        iconClass = 'act-exec';
+        iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+        title = 'Payment <span class="act-amount">' + amtStr + ' ' + tokenInfo.symbol + '</span> executed';
+        detail = 'Schedule #' + schedId + ' · Submitter: ' + submitter.slice(0,8) + '... earned ' + tipStr + ' tip';
+      } else if (topic === EVENT_TOPICS.created) {
+        var schedId2 = BigInt(log.topics[1]);
+        var payer = '0x' + log.topics[2].slice(26);
+        iconClass = 'act-create';
+        iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+        title = 'Schedule <span class="act-amount">#' + schedId2 + '</span> created';
+        detail = 'By: ' + payer.slice(0,10) + '...' + payer.slice(-6);
+      } else if (topic === EVENT_TOPICS.cancelled) {
+        var schedId3 = BigInt(log.topics[1]);
+        iconClass = 'act-cancel';
+        iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+        title = 'Schedule <span class="act-amount">#' + schedId3 + '</span> cancelled';
+        var refundAmt = BigInt('0x' + log.data.slice(2, 66));
+        var refInfo = guessToken(refundAmt);
+        detail = 'Refunded: ' + formatTokenAmount(refundAmt, refInfo.decimals) + ' ' + refInfo.symbol;
+      } else {
+        var schedId4 = BigInt(log.topics[1]);
+        iconClass = 'act-reclaim';
+        iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>';
+        title = 'Schedule <span class="act-amount">#' + schedId4 + '</span> reclaimed';
+        var reclaimAmt = BigInt('0x' + log.data.slice(2, 66));
+        var recInfo = guessToken(reclaimAmt);
+        detail = 'Refunded: ' + formatTokenAmount(reclaimAmt, recInfo.decimals) + ' ' + recInfo.symbol;
+      }
+
+      html += '<div class="activity-item">'
+        + '<div class="activity-icon ' + iconClass + '">' + iconSvg + '</div>'
+        + '<div class="activity-body">'
+        + '<div class="activity-title">' + title + '</div>'
+        + '<div class="activity-detail">' + detail + '</div>'
+        + '</div>'
+        + '<div class="activity-block">' + timeAgo + '<br>Block ' + blockNum + '</div>'
+        + '</div>';
+      shown++;
+    }
+
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Error: ' + e.message + '</div></div>';
+  }
+}
+
+function guessToken(amount) {
+  if (amount === 0n) return { symbol: '', decimals: 6 };
+  var tokens = Object.values(CFG.tokens);
+  if (tokens.length > 0) return tokens[0];
+  return { symbol: 'tokens', decimals: 6 };
 }
 
 // --- Schedule detail modal ---

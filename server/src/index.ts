@@ -3,6 +3,7 @@ import {
   createWalletClient,
   http,
   webSocket,
+  formatEther,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { createServer } from "node:http";
@@ -45,6 +46,9 @@ async function main() {
 
   let lastBlock = indexer.getLastSyncedBlock();
   let running = true;
+  let executedCount = 0;
+  let lastError = "";
+  const startTime = Date.now();
 
   const shutdown = () => {
     console.log("\n[main] Shutting down...");
@@ -54,9 +58,36 @@ async function main() {
   process.on("SIGTERM", shutdown);
 
   const port = parseInt(process.env.PORT || "10000");
-  createServer((_req, res) => {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ status: "ok", block: Number(lastBlock) }));
+  createServer(async (_req, res) => {
+    let walletBalance = "unknown";
+    try {
+      const bal = await publicClient.getBalance({ address: account.address });
+      walletBalance = formatEther(bal);
+    } catch {}
+
+    const uptimeMs = Date.now() - startTime;
+    const uptimeMin = Math.floor(uptimeMs / 60000);
+    const uptimeH = Math.floor(uptimeMin / 60);
+    const uptime = uptimeH > 0
+      ? `${uptimeH}h ${uptimeMin % 60}m`
+      : `${uptimeMin}m`;
+
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    });
+    res.end(JSON.stringify({
+      status: "ok",
+      block: Number(lastBlock),
+      activeSchedules: indexer.getActive().length,
+      executedCount,
+      uptime,
+      uptimeMs,
+      wallet: account.address,
+      walletBalance: walletBalance + " OKB",
+      chainId: config.chainId,
+      lastError: lastError || null,
+    }));
   }).listen(port, () => console.log(`[main] Health endpoint on :${port}`));
 
   console.log(`[main] Watching from block ${lastBlock}. Poll: ${config.pollIntervalMs}ms`);
@@ -67,11 +98,16 @@ async function main() {
 
       if (currentBlock > lastBlock) {
         await indexer.processNewLogs(lastBlock + 1n, currentBlock);
+        const before = indexer.getActive().length;
         await executor.tick(currentBlock);
+        const after = indexer.getActive().length;
+        executedCount += Math.max(0, before - after);
         lastBlock = currentBlock;
+        lastError = "";
       }
     } catch (err) {
-      console.error("[main] Error in loop:", err instanceof Error ? err.message : err);
+      lastError = err instanceof Error ? err.message : String(err);
+      console.error("[main] Error in loop:", lastError);
     }
 
     await sleep(config.pollIntervalMs);
